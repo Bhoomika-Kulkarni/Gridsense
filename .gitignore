@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+
+# Data files
+data/raw/*
+data/bronze/*
+data/silver/*
+data/gold/*
+
+# Keep folder structure
+!data/raw/**/.gitkeep
+!data/bronze/**/.gitkeep
+!data/silver/**/.gitkeep
+!data/gold/**/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PySpark
+spark-warehouse/
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+
+# Airflow
+airflow/logs/
+
+# Node
+node_modules/
+
+# Build files
+dist/
+build/
+*.egg-info/

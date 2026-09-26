@@ -1,0 +1,18 @@
+project:
+  name: GridSense
+  environment: development
+
+database:
+  host: localhost
+  port: 5432
+  database: gridsense
+  schema: public
+
+kafka:
+  bootstrap_servers: localhost:9092
+
+data:
+  raw_path: data/raw
+  bronze_path: data/bronze
+  silver_path: data/silver
+  gold_path: data/gold
