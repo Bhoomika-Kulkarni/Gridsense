@@ -56,3 +56,9 @@ node_modules/
 dist/
 build/
 *.egg-info/
+# dbt profiles and credentials
+dbt_profiles/
+airflow/config/
+airflow/*_backup.yaml
+airflow/*_broken.yaml
+airflow/compose-resolved.yaml

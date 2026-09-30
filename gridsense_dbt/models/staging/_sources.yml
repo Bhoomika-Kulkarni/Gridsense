@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: warehouse
+    schema: warehouse
+    description: "GridSense governed warehouse tables"
+
+    tables:
+      - name: dim_region
+      - name: dim_tariff
+      - name: dim_customer
+      - name: dim_meter
+      - name: dim_asset
+      - name: dim_date
+      - name: fact_energy_usage
+      - name: fact_outage
+      - name: fact_maintenance
+      - name: fact_weather

@@ -1,0 +1,37 @@
+project:
+  name: GridSense
+  random_seed: 42
+
+regions:
+  - North
+  - South
+  - East
+  - West
+  - Central
+
+date_range:
+  start_date: "2026-01-01"
+  end_date: "2026-03-31"
+
+record_counts:
+  customers: 5000
+  meters: 5000
+  substations: 50
+  outages: 3000
+  maintenance: 2000
+
+weather:
+  frequency: "1h"
+
+meter_readings:
+  active_meters: 1000
+  frequency: "15min"
+
+output:
+  base_path: "data/raw"
+  customers: "data/raw/customers"
+  meters: "data/raw/meters"
+  substations: "data/raw/substations"
+  outages: "data/raw/outages"
+  weather: "data/raw/weather"
+  maintenance: "data/raw/maintenance"
