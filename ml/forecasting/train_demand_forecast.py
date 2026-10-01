@@ -223,30 +223,32 @@ results["model_name"] = "RandomForestRegressor"
 results["mae"] = mae
 results["rmse"] = rmse
 
-insert_query = text("""
-    INSERT INTO warehouse.fact_demand_forecast
-    (
-        forecast_date,
-        region_name,
-        actual_kwh,
-        predicted_kwh,
-        model_name,
-        mae,
-        rmse
-    )
-    VALUES
-    (
-        :forecast_date,
-        :region_name,
-        :actual_kwh,
-        :predicted_kwh,
-        :model_name,
-        :mae,
-        :rmse
-    )
-""")
-
 with engine.begin() as connection:
+    connection.execute(text("DELETE FROM warehouse.fact_demand_forecast"))
+
+    insert_query = text("""
+        INSERT INTO warehouse.fact_demand_forecast
+        (
+            forecast_date,
+            region_name,
+            actual_kwh,
+            predicted_kwh,
+            model_name,
+            mae,
+            rmse
+        )
+        VALUES
+        (
+            :forecast_date,
+            :region_name,
+            :actual_kwh,
+            :predicted_kwh,
+            :model_name,
+            :mae,
+            :rmse
+        )
+    """)
+
     for _, row in results.iterrows():
         connection.execute(
             insert_query,

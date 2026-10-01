@@ -10,6 +10,19 @@ import {
   getDataQuality,
 } from "../services/api";
 
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
 function formatNumber(value, decimals = 2) {
   const number = Number(value);
 
@@ -172,6 +185,38 @@ function Dashboard({ onLogout }) {
     ]),
     1
   );
+
+    const regionalLoadChartData =
+    liveGrid?.regional_load?.map((item) => ({
+      region: item.region_name,
+      load: Number(item.load_kwh) || 0,
+    })) || [];
+
+  const forecastChartData = forecasts
+    .map((item) => ({
+      date: item.forecast_date || item.full_date,
+      actual: Number(item.actual_kwh ?? item.total_kwh) || 0,
+      predicted: Number(item.predicted_kwh) || 0,
+    }))
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+
+  const alertChartData = Object.entries(
+    alerts.reduce((acc, alert) => {
+      const severity = String(alert.severity || "UNKNOWN").toUpperCase();
+      acc[severity] = (acc[severity] || 0) + 1;
+      return acc;
+    }, {})
+  ).map(([severity, count]) => ({
+    severity,
+    count,
+  }));
+
+  const regionEnergyChartData = regionData
+    .map((item) => ({
+      region: item.region_name,
+      energy: Number(item.total_kwh) || 0,
+    }))
+    .filter((item) => item.region);
 
   if (loading) {
     return (
@@ -547,6 +592,65 @@ function Dashboard({ onLogout }) {
             </div>
           </div>
         </section>
+
+                <div className="charts-grid">
+          <section className="chart-card">
+            <div className="section-header">
+              <div>
+                <h2>Regional Live Load</h2>
+                <p>Current load across GridSense regions</p>
+              </div>
+            </div>
+
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={regionalLoadChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="region" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="load" name="Load (kWh)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+
+          <section className="chart-card">
+            <div className="section-header">
+              <div>
+                <h2>Demand Forecast</h2>
+                <p>Actual versus predicted energy demand</p>
+              </div>
+            </div>
+
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={forecastChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="actual"
+                    name="Actual (kWh)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="predicted"
+                    name="Predicted (kWh)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+        </div>
 
         {/* REGIONAL DETAILS */}
         <section className="dashboard-section">

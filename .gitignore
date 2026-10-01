@@ -48,6 +48,7 @@ dbt/dbt_packages/
 
 # Airflow
 airflow/logs/
+airflow/.env
 
 # Node
 node_modules/
@@ -62,3 +63,5 @@ airflow/config/
 airflow/*_backup.yaml
 airflow/*_broken.yaml
 airflow/compose-resolved.yaml
+
+

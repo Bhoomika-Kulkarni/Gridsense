@@ -18,19 +18,15 @@ default_args = {
 
 
 def run_command(command):
-    """Run a GridSense command and fail the Airflow task if it fails."""
-    print(f"Running: {command}")
-
     result = subprocess.run(
         command,
-        cwd=PROJECT_ROOT,
         shell=True,
-        text=True,
         capture_output=True,
+        text=True,
+        cwd="/opt/gridsense"
     )
 
-    if result.stdout:
-        print(result.stdout)
+    print(result.stdout)
 
     if result.stderr:
         print(result.stderr)
@@ -40,8 +36,7 @@ def run_command(command):
             f"Command failed with exit code {result.returncode}: {command}"
         )
 
-    print(f"Command completed successfully: {command}")
-
+    return result.stdout
 
 def batch_ingestion():
     """
@@ -110,8 +105,7 @@ def silver_validation():
 def dbt_transformations():
     """Build all dbt models and execute all dbt tests."""
     run_command(
-        "bash -c "
-        "\"cd gridsense_dbt && dbt build\""
+        "cd /opt/gridsense/gridsense_dbt && dbt build"
     )
 
 
@@ -123,54 +117,7 @@ def demand_forecast():
 
 
 def generate_alerts():
-    """
-    Verify that forecast-based operational alerts exist.
-
-    Alert generation is already implemented in the GridSense
-    database workflow. This task validates the generated alert
-    records before notifications are sent.
-    """
-    import os
-    import psycopg2
-
-    connection = psycopg2.connect(
-        host=os.getenv("DB_HOST", "host.docker.internal"),
-        port=os.getenv("DB_PORT", "5432"),
-        database=os.getenv("DB_NAME", "gridsense"),
-        user=os.getenv("DB_USER", "postgres"),
-        password=os.getenv("DB_PASSWORD"),
-    )
-
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT
-                    COUNT(*),
-                    COUNT(*) FILTER (WHERE status = 'OPEN'),
-                    COUNT(*) FILTER (WHERE status = 'ACKNOWLEDGED'),
-                    COUNT(*) FILTER (WHERE status = 'RESOLVED')
-                FROM warehouse.fact_grid_alert;
-                """
-            )
-
-            total, open_count, acknowledged_count, resolved_count = cursor.fetchone()
-
-            print(f"Total alerts: {total}")
-            print(f"Open alerts: {open_count}")
-            print(f"Acknowledged alerts: {acknowledged_count}")
-            print(f"Resolved alerts: {resolved_count}")
-
-            if total == 0:
-                raise ValueError(
-                    "Alert validation failed: no alerts exist in "
-                    "warehouse.fact_grid_alert."
-                )
-
-            print("GridSense alert validation passed.")
-
-    finally:
-        connection.close()
+    run_command("python -m automation.alerts.generate_alerts")
 
 
 def send_notifications():
